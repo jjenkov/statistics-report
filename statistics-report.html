@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+
+body{
+    font-family: Arial;
+	background-color: #f0f0f0;
+	margin: 0px;
+}
+h2{	
+	margin: 30px 0px 10px 0px;
+}
+input[type=submit], input[type=button]{
+    padding: 8px 12px;
+	font-size: 1.1em;
+}
+#wrapper{
+}
+#header {
+	background-color: #202020;
+    background-image: linear-gradient(180deg, #303030, #000000);
+	color: #ffffff;
+	padding: 20px;
+	font-size: 2em;
+}
+.innerRow{
+	max-width: 1200px;
+    margin: 0px auto;
+}
+.cell{
+	background-color: #ffffff;
+	border: 1px solid #cccccc;
+	padding: 10px;
+}
+td {
+ border-bottom: 1px solid #f0f0f0;
+}
+
+</style>
+</head>
+
+<body>
+<div id="wrapper">
+<div id="header">
+<div class="innerRow">Statistics Report</div>
+</div>
+</div>
+
+<br>
+<div class="innerRow">
+<h2>Data Set</h2>
+
+<p>
+Enter numbers separated by commas. Spaces and line breaks are ignored. Click "Calculate" to calculate statistics for the data.
+</p>
+<div id="data" contenteditable="true" class="cell">
+1,1,1,2,3,4,4,3,4,5,3,2,1,2,3,4,10,9,8
+</div>
+
+<form onsubmit="doCalc(); return false;" action="#">
+<input type="submit" value="Calculate" >
+<input type="button" value="Sort" onclick="doSort(); return false;">
+<span id="dataStatusMsg">Data OK</span>
+</form>
+
+<h2>Statistics</h2>
+
+<table class="cell" cellspacing="0" cellpadding="4">
+<tr><td>Count</td><td align="right"><span id="count"></span></td></tr>
+<tr><td>Sum</td><td align="right"><span id="sum"></span></td></tr>
+<tr><td>Max</td><td align="right"><span id="max"></span></td></tr>
+<tr><td>Min</td><td align="right"><span id="min"></span></td></tr>
+<tr><td>Mean</td><td align="right"><span id="mean"></span></td></tr>
+<tr><td>Median</td><td align="right"><span id="median"></span></td></tr>
+<tr><td>Mode</td><td align="right"><span id="mode"></span></td></tr>
+<tr><td>Range</td><td align="right"><span id="range"></span></td></tr>
+
+</div>
+
+<script>
+var dataSet = [1,1,1,2,3,4,4,3,4,5,3,2,1,2,3,4,10,9,8];
+</script>
+
+<script src="statistics-functions.js"></script>
+
+
+<script>
+function el(id){
+	return document.getElementById(id);
+}
+function elText(id) {
+    return el(id).innerText;
+}
+function elSet(id, html) {
+    var elm = el(id);
+	if(elm == null) {
+		console.log("element is null");
+	} else {
+	    elm.innerHTML = html;
+	}
+}
+
+function getData(el) {
+   var dataObj = {};
+   dataObj.dataStr = el.innerText;
+   dataObj.dataStrArray = dataObj.dataStr.split(",");
+   
+   dataObj.dataArray = new Array();
+   
+   dataObj.statusMsg = "";
+
+   for(var i=0; i<dataObj.dataStrArray.length; i++) {
+	 var trimmedVal = dataObj.dataStrArray[i].trim();
+	
+	 if(trimmedVal.indexOf(" ") > -1) {
+	   dataObj.statusMsg = "Error in data value: '" + trimmedVal + "'";
+	 }
+	 var val = parseFloat(trimmedVal);
+	
+	 if(isNaN(val)) {
+	   dataObj.statusMsg = "Error in data value: " + trimmedVal;
+	 }
+	
+	 dataObj.dataArray.push(val);
+   }
+   
+   return dataObj;
+}
+
+function doSort() {
+	var dataObj = getData(el("data"));
+	sort(dataObj.dataArray);
+	var dataStr = "";
+	for(var i=0; i < dataObj.dataArray.length; i++){
+	  if(i > 0) {
+	    dataStr += ",";
+	  }
+	  dataStr += dataObj.dataArray[i];
+	}
+	elSet("data", dataStr);
+}
+
+function doCalc() {
+  var dataObj = getData(el("data"));
+  elSet("dataStatusMsg", dataObj.statusMsg == "" ? "Data OK": dataObj.statusMsg);
+
+  calculateStatistics(dataObj);
+
+  elSet("count", dataObj.count);
+  elSet("sum"  , dataObj.sum);
+
+  elSet("max", dataObj.max);
+  elSet("min", dataObj.min);
+
+  elSet("mean"  , dataObj.mean3);	  
+  elSet("median", dataObj.median);
+  elSet("mode"  , dataObj.mode);
+  elSet("range" , dataObj.range);
+
+}
+
+doCalc();
+</script>
+
+
+
+
+
+
+</body>
+
+</html>
