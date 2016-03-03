@@ -13,6 +13,8 @@ function calculateStatistics(dataObj) {
 	  dataObj.range  = range(dataArray);
 	  
 	  var freqDist = frequencyDistribution(dataArray);
+
+	  dataObj.freqDist = freqDist;
 	  
   } catch(exception) {
       console.log(exception);
